@@ -5,7 +5,7 @@ import razorpay from 'razorpay'
 
 
 const currency='inr'
-const deliveryCharge=10
+const deliveryCharge=0
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 const razorpayInstance=new razorpay({
@@ -17,14 +17,15 @@ const placeOrder = async (req, res) => {
         const { userId, items, amount, address } = req.body
 
         const orderData = {
-            userId,
-            items,
-            address,
-            amount,
-            paymentMethod: "COD",
-            payment: false,
-            date: Date.now()
-        }
+          userId,
+          items,
+          address,
+          amount,
+          paymentMethod: "COD",
+          payment: false,
+          status: DEFAULT_STATUS,
+          date: Date.now(),
+        };
 
         const newOrder = new orderModel(orderData)
         await newOrder.save()
@@ -42,14 +43,15 @@ const placeOrderStripe = async (req, res) => {
         const { userId, items, amount, address } = req.body
         const { origin } = req.headers
         const orderData = {
-            userId,
-            items,
-            address,
-            amount,
-            paymentMethod: "Stripe",
-            payment: false,
-            date: Date.now()
-        }
+          userId,
+          items,
+          address,
+          amount,
+          paymentMethod: "Stripe",
+          payment: false,
+          status: DEFAULT_STATUS,
+          date: Date.now(),
+        };
         const newOrder = new orderModel(orderData)
         await newOrder.save()
         
@@ -70,9 +72,9 @@ const placeOrderStripe = async (req, res) => {
                 product_data:{
                    name:"Delivery Charges" 
                 },
-                unit_amount:deliveryCharge*100
+                unit_amount:0
             },
-            quantity:1
+            quantity:0
         })
 
         const session = await stripe.checkout.sessions.create({
@@ -113,14 +115,15 @@ const placeOrderRazorpay = async (req, res) => {
 try {
             const { userId, items, amount, address } = req.body
         const orderData = {
-            userId,
-            items,
-            address,
-            amount,
-            paymentMethod: "Razorpay",
-            payment: false,
-            date: Date.now()
-        }
+          userId,
+          items,
+          address,
+          amount,
+          paymentMethod: "Razorpay",
+          payment: false,
+          status: DEFAULT_STATUS,
+          date: Date.now(),
+        };
         const newOrder = new orderModel(orderData)
         await newOrder.save()
 

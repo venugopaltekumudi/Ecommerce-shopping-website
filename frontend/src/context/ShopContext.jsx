@@ -12,7 +12,7 @@ const ShopContextProvider = (props) => {
   const navigate = useNavigate();
 const backendUrl =import.meta.env.VITE_BACKEND_URL
   const currency = "$";
-  const delivery_fee = 10;
+  const delivery_fee = 0;
   const [products,setProducts]=useState([]);
   useEffect(() => {
     // INFO: Load cart items from localStorage when the component mounts
