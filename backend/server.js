@@ -10,6 +10,9 @@ import orderRouter from "./routes/orderRoute.js";
 
 // App Config
 const app = express();
+
+// IMPORTANT: Render will automatically provide a PORT environment variable.
+// We must use process.env.PORT to allow Render to connect to our app.
 const port = process.env.PORT || 4000;
 
 // Connect to External Services
@@ -19,23 +22,20 @@ connectCloudinary();
 // --- MIDDLEWARE ---
 app.use(express.json());
 
-// FIXED CORS: Added localhost to the allowed list so you can work locally
+// CORS Configuration
 const allowedOrigins = [
-  "http://localhost:5173", // Frontend Local
-  "http://localhost:5174", // Admin Local (usually 5174)
-  "https://ecommerce-shopping-website-1.onrender.com", // Frontend Deployed
-  "https://fashion-world-dwpa.onrender.com", // Admin Deployed
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://ecommerce-shopping-website-1.onrender.com",
+  "https://fashion-world-dwpa.onrender.com",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
-        var msg =
-          "The CORS policy for this site does not allow access from the specified Origin.";
-        return callback(new Error(msg), false);
+        return callback(new Error("CORS policy violation"), false);
       }
       return callback(null, true);
     },
@@ -50,10 +50,13 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
-// Default route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// Start server
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+// --- START SERVER ---
+// We add '0.0.0.0' to tell the server to listen on all available network interfaces.
+// This is a requirement for Render to detect the open port.
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server is running on port ${port}`);
+});
